@@ -32,47 +32,56 @@
     {
       id: 'current', name: 'Do nothing', tag: 'Current law',
       blurb: 'No legislation. OASI runs dry in 2032, the combined funds in 2034, and benefits are cut automatically to what incoming taxes can pay (about 77–83%).',
-      settings: {}
+      settings: {},
+      sources: [['2026 Trustees Report highlights', 'https://www.ssa.gov/oact/tr/2026/II_A_highlights.html']]
     },
     {
       id: 'tax', name: 'Taxes only', tag: 'Revenue-side bookend',
-      blurb: 'Close the gap entirely with a higher payroll tax rate, as the Trustees\' "what it would take" illustration does. Roughly a 4–5 point rise on top of 12.4%.',
-      settings: { payrollRate: 4.7 }
+      blurb: 'Close the gap entirely with a higher payroll tax rate. The 2025 Trustees report put the immediate fix at 3.65 points (12.4% to 16.05%); starting in 2030 instead needs more, about 4.7. Our own bookend, not a bill.',
+      settings: { payrollRate: 4.7 },
+      sources: [['CRFB analysis of the 2025 Trustees report', 'https://www.crfb.org/papers/analysis-2025-social-security-trustees-report']]
     },
     {
       id: 'benefits', name: 'Benefits only', tag: 'Spending-side bookend',
-      blurb: 'Close the gap with no new revenue: later retirement age indexed to longevity, chained CPI, and a trim to new retirees\' initial benefits, deeper for higher earners.',
-      settings: { fra: 69, fraIndexed: true, cola: 'chained', newCut: 15, highCut: 25 }
+      blurb: 'Close the gap with no new revenue: later retirement age indexed to longevity, chained CPI, and a trim to new retirees\' initial benefits, deeper for higher earners. Our own bookend, not a bill.',
+      settings: { fra: 69, fraIndexed: true, cola: 'chained', newCut: 15, highCut: 25 },
+      sources: []
     },
     {
       id: 'sb', name: 'Simpson–Bowles style', tag: '2010 fiscal commission',
-      blurb: 'A bipartisan mix: raise the cap to cover ~90% of earnings, chained CPI, a more progressive benefit formula, and a gradually rising retirement age (to 69 by 2075 in the original; modeled here as a faster ramp).',
-      settings: { taxShare: 90, fra: 69, fraIndexed: true, cola: 'chained', highCut: 25, newCut: 4 }
+      blurb: 'The 2010 co-chairs\' plan: raise the cap to cover 90% of earnings, chained CPI, a retirement age that drifts up to 68 by 2050 and 69 by 2075 (modeled as indexing to longevity), a more progressive formula for higher earners, and a minimum benefit at 125% of poverty. It also extended coverage to new state and local hires (not modeled). The original claimed 75-year balance against 2010 projections; against today\'s larger gap it closes less. The formula trim size is our guess.',
+      settings: { taxShare: 90, fraIndexed: true, cola: 'chained', highCut: 25, minBenefit: 100 },
+      sources: [['CBPP: what was in Bowles–Simpson', 'https://www.cbpp.org/research/what-was-actually-in-bowles-simpson-and-how-can-we-compare-it-with-other-plans'], ['CBPP: Bowles–Simpson Social Security proposal', 'https://www.cbpp.org/research/bowles-simpson-social-security-proposal-not-a-good-starting-point-for-reforms']]
     },
     {
       id: 's2100', name: 'Social Security 2100 style', tag: 'Larson / Blumenthal bill',
-      blurb: 'Expand benefits modestly (about 2% across the board, CPI-E COLA) and pay for it by taxing earnings above $400k and adding new taxes on high earners\' investment income. Roughly encoded.',
-      settings: { taxShare: 97, benefitCredit: false, newCut: -2, cola: 'cpie', otherRevenue: 3.2 }
+      blurb: 'Applies the 12.4% tax to earnings above $400,000, leaving a gap between today\'s cap and $400k, adds a 2% across-the-board benefit increase, CPI-E cost-of-living adjustments, and a minimum benefit at 125% of poverty, with a tax on high earners\' investment income. Newly taxed earnings add only a small benefit (1% replacement), treated as none here. The investment-income revenue size is back-solved from a reported "about half the shortfall" score, not verified.',
+      settings: { taxShare: 90, benefitCredit: false, allCut: -2, cola: 'cpie', minBenefit: 100, otherRevenue: 2.0 },
+      sources: [['CBPP: Social Security 2100 overview', 'https://www.cbpp.org/research/social-security/social-security-2100-an-overview'], ['Congress.gov: S.2280', 'https://www.congress.gov/bill/118th-congress/senate-bill/2280']]
     },
     {
       id: 'rsc', name: 'Republican Study Committee style', tag: 'House GOP budget',
-      blurb: 'Benefit-side reforms without tax increases: raise the full retirement age to 69, chained CPI, and slower benefit growth for higher earners. Roughly encoded.',
-      settings: { fra: 69, cola: 'chained', highCut: 20, newCut: 4 }
+      blurb: 'The RSC budget raises the full retirement age to 69 (three months a year, modeled here at the standard two) and slows benefit growth for higher earners. Reports differ on whether it also adopts chained CPI for Social Security, so that is left out. The size of the higher-earner slowdown is our guess.',
+      settings: { fra: 69, highCut: 20 },
+      sources: [['Center for American Progress on the RSC budget', 'https://www.americanprogress.org/article/the-house-republican-study-committee-budget-proposes-harsh-changes-to-social-security/'], ['Cato: RSC budget and key drivers', 'https://www.cato.org/blog/republican-study-committee-budget-key-drivers-spending-debt']]
     },
     {
       id: 'ck', name: 'Cassidy–Kaine investment fund', tag: 'Senate bipartisan idea',
-      blurb: 'Borrow ~$1.5T, invest it in stocks for decades, and use the returns to help pay benefits. Critics note it adds little unless returns are high, and the borrowing has a cost not captured here.',
-      settings: { deposit: 1.4, equityShare: 100 }
+      blurb: 'The real plan borrows $300B a year for five years ($1.5T), puts it in a separate fund invested for 70 years, and has Treasury cover benefits meanwhile, repaying at the end. This model can only approximate that as a deposit into the trust fund invested in stocks, so it overstates near-term help and ignores borrowing costs. Critics\' stress tests found it fails to repay in about 70% of scenarios.',
+      settings: { deposit: 1.5, equityShare: 100 },
+      sources: [['The Hill: what to know', 'https://thehill.com/business/budget/5439992-bipartisan-senate-social-security-plan/'], ['CRR critique', 'https://crr.bc.edu/the-cassidy-kaine-proposal-does-virtually-nothing-to-solve-social-securitys-financing-problems/']]
     },
     {
-      id: 'protect', name: 'Protect the vulnerable', tag: 'A fairness-first mix',
-      blurb: 'Raise the cap without extra benefits for top earners, a modest rate rise and new revenue, then spare lower earners and anyone 55+ from cuts, add a minimum benefit and caregiver credit, and ask higher earners to take a smaller benefit growth.',
-      settings: { taxShare: 92, benefitCredit: false, payrollRate: 0.8, otherRevenue: 0.6, shield: true, grandfather: true, minBenefit: 50, caregiver: 3, fra: 68, fraIndexed: true, highCut: 20, cola: 'chained' }
+      id: 'protect', name: 'Protect the vulnerable', tag: 'Our fairness-first mix',
+      blurb: 'Our own illustration, not a bill: raise the cap without extra benefits for top earners, a modest rate rise and new revenue, then spare lower earners and anyone 55+ from cuts, add a minimum benefit and caregiver credit, and ask higher earners to take smaller benefit growth.',
+      settings: { taxShare: 92, benefitCredit: false, payrollRate: 0.8, otherRevenue: 0.6, shield: true, grandfather: true, minBenefit: 50, caregiver: 3, fra: 68, fraIndexed: true, highCut: 20, cola: 'chained' },
+      sources: []
     },
     {
-      id: 'mix', name: 'Shared sacrifice', tag: 'A middle path to try',
-      blurb: 'A balanced starting point: a small rate increase, a higher cap, a modest retirement-age rise, and chained CPI. Does it get you all the way?',
-      settings: { payrollRate: 1.0, taxShare: 90, fra: 68, cola: 'chained', highCut: 10 }
+      id: 'mix', name: 'Shared sacrifice', tag: 'Our middle path',
+      blurb: 'Our own illustration, not a bill: a small rate increase, a higher cap, a modest retirement-age rise, and chained CPI. Does it get you all the way?',
+      settings: { payrollRate: 1.0, taxShare: 90, fra: 68, cola: 'chained', highCut: 10 },
+      sources: []
     }
   ];
 

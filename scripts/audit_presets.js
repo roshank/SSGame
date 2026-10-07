@@ -1,0 +1,15 @@
+const M=require('../model.js');
+const run=(n,o)=>{const s=M.summarize(M.simulate(Object.assign({startYear:2030},o)));console.log(n.padEnd(34),'closed',s.closedPct.toFixed(0).padStart(4)+'%','depl',s.depletionYear,'final',s.finalYearBalance.toFixed(2));};
+console.log('--- current encodings');
+run('SS2100 (current)',{taxShare:97,benefitCredit:false,newCut:-2,cola:'cpie',otherRevenue:3.2});
+run('S-B (current)',{taxShare:90,fra:69,fraIndexed:true,cola:'chained',highCut:25,newCut:4});
+run('RSC (current)',{fra:69,cola:'chained',highCut:20,newCut:4});
+console.log('--- corrected');
+run('SS2100: donut~90, +2% all, CPI-E, minben',{taxShare:90,benefitCredit:false,allCut:-2,cola:'cpie',minBenefit:100});
+run('  + NIIT-type 1.0pp',{taxShare:90,benefitCredit:false,allCut:-2,cola:'cpie',minBenefit:100,otherRevenue:1.0});
+run('S-B: cap90, FRA idx from 67, chained, progressive, minben',{taxShare:90,fra:67,fraIndexed:true,cola:'chained',highCut:25,minBenefit:100});
+run('  S-B w/o highCut',{taxShare:90,fra:67,fraIndexed:true,cola:'chained',minBenefit:100});
+run('RSC: FRA69, high-earner slowdown',{fra:69,highCut:20});
+run('RSC + chained',{fra:69,highCut:20,cola:'chained'});
+run('Taxes only 3.65 start 2027',{startYear:2027,payrollRate:3.65});
+run('Taxes only 4.7 start 2030',{payrollRate:4.7});

@@ -22,4 +22,7 @@ assert.ok(sum({ recession: 8 }).closedPct < 0, 'recession hurts');
 const crashed = M.simulate({ startYear: 2027, equityShare: 100, deposit: 1.4, crash: 40, crashYear: 2030 });
 const noCrash = M.simulate({ startYear: 2027, equityShare: 100, deposit: 1.4 });
 assert.ok(crashed.reserve[6] < noCrash.reserve[6], 'crash cuts reserves');
+// every preset only sets real levers
+global.window = global; require('../data.js');
+for (const p of global.SSData.PRESETS) for (const k of Object.keys(p.settings)) assert.ok(k in M.DEFAULTS, p.id + ' sets unknown lever ' + k);
 console.log('model tests passed');
