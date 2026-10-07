@@ -2,7 +2,7 @@
 
 An interactive, no-build web app for exploring how policy levers (payroll tax rate, taxable maximum,
 retirement age, benefit formula, COLA, trust-fund investing, demographics) change the Social Security
-trust fund. Includes presets modeled on real proposals and a table of published expert scores.
+trust fund. Levers are grouped into five buckets (Sources, People, Retirement, Economy, Shocks). Includes presets modeled on real proposals and a table of published expert scores.
 
 Open `index.html` in a browser (or `python3 -m http.server`). Scenarios are shareable via the URL hash.
 

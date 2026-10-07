@@ -65,6 +65,11 @@
       settings: { deposit: 1.4, equityShare: 100 }
     },
     {
+      id: 'protect', name: 'Protect the vulnerable', tag: 'A fairness-first mix',
+      blurb: 'Raise the cap without extra benefits for top earners, a modest rate rise and new revenue, then spare lower earners and anyone 55+ from cuts, add a minimum benefit and caregiver credit, and ask higher earners to take a smaller benefit growth.',
+      settings: { taxShare: 92, benefitCredit: false, payrollRate: 0.8, otherRevenue: 0.6, shield: true, grandfather: true, minBenefit: 50, caregiver: 3, fra: 68, fraIndexed: true, highCut: 20, cola: 'chained' }
+    },
+    {
       id: 'mix', name: 'Shared sacrifice', tag: 'A middle path to try',
       blurb: 'A balanced starting point: a small rate increase, a higher cap, a modest retirement-age rise, and chained CPI. Does it get you all the way?',
       settings: { payrollRate: 1.0, taxShare: 90, fra: 68, cola: 'chained', highCut: 10 }

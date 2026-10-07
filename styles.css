@@ -75,3 +75,42 @@ button.link{background:none;border:0;color:var(--brand);text-decoration:underlin
 }
 .verdict{padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-size:15px;margin:-4px 0 12px}
 .verdict.win{border-color:var(--good);background:color-mix(in srgb,var(--good) 12%,var(--card))}
+
+/* ---- bucket tabs, panels, game widgets ---- */
+.timing{padding:6px 16px}
+.tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;padding:2px 0 8px}
+.tab{flex:1 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:8px 12px;font:inherit;font-size:14px;cursor:pointer;text-align:left;min-width:0}
+.tab .t{display:block;font-weight:600}
+.tab .b{display:block;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tab .b.pos{color:var(--good)}.tab .b.neg{color:var(--bad)}
+.tab[aria-selected="true"]{border-color:var(--brand);box-shadow:inset 0 -3px 0 var(--brand)}
+.panel[hidden]{display:none}
+.panel .intro{font-size:14px;color:var(--muted);margin:0 0 10px}
+.sect{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:10px}
+.sect h3{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:15px}
+.rough{font-size:11px;font-weight:600;padding:1px 7px;border-radius:99px;border:1px solid var(--warn);color:var(--warn)}
+.fill.cap{background:var(--good)}
+.fill.cap.warn{background:var(--warn)}.fill.cap.over{background:var(--bad)}
+.of{font-size:18px;color:var(--muted);font-weight:500}
+.approvals{display:grid;gap:10px;margin-top:10px}
+.appr .row{display:flex;justify-content:space-between;font-size:14px}
+.appr .row span:last-child{font-variant-numeric:tabular-nums;font-weight:600}
+.appr .bar{height:10px;border-radius:99px;background:var(--grid);overflow:hidden;margin-top:4px}
+.appr .bar i{display:block;height:100%;border-radius:99px;transition:width .25s;background:var(--brand)}
+.appr .bar i.low{background:var(--bad)}.appr .bar i.mid{background:var(--warn)}.appr .bar i.high{background:var(--good)}
+.appr small{color:var(--muted);font-size:12px}
+.missions{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-top:10px}
+.mission{border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;opacity:.75}
+.mission b{display:block;font-size:14px}
+.mission.done{opacity:1;border-color:var(--good);background:color-mix(in srgb,var(--good) 12%,var(--card))}
+.mission.now{outline:2px solid var(--good)}
+.mission .st{font-size:12px;color:var(--muted)}
+.mission.done .st{color:var(--good);font-weight:600}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+button.btn{font:inherit;font-size:14px;padding:8px 14px;border-radius:10px;border:1px solid var(--brand);background:var(--brand);color:#fff;cursor:pointer}
+button.btn.alt{background:var(--card);color:var(--brand)}
+
+
+.goals{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px;font-size:15px}
+.goals li.ok{color:var(--good);font-weight:600}.goals li.no{color:var(--muted)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
