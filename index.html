@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fix Social Security</title>
-<meta name="description" content="Pull the levers Congress is debating and see how each one changes the Social Security trust fund.">
+<meta name="description" content="A game: pull the levers Congress is debating and try to save the Social Security trust fund.">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header class="top">
   <div class="wrap">
     <h1>Fix Social Security</h1>
-    <p class="sub">Pull the levers Congress is debating. See what happens to the trust fund, and who pays.</p>
+    <p class="sub">Save the trust fund. Pull the levers Congress is debating, watch the clock, and keep your coalition together.</p>
   </div>
 </header>
 
@@ -24,15 +24,15 @@
     </div>
     <div class="card">
       <div class="label">75-year shortfall closed</div>
-      <div class="meter"><div class="fill" id="closedFill"></div><div class="mark" title="100%"></div></div>
+      <div class="meter"><div class="fill" id="closedFill"></div></div>
       <div class="big sm" id="closedPct">0%</div>
       <div class="note" id="balNote"></div>
     </div>
     <div class="card">
-      <div class="label">Who carries the fix?</div>
-      <div class="split" id="split"><div class="tax" id="splitTax"></div><div class="ben" id="splitBen"></div></div>
-      <div class="legend"><span><i class="dot t"></i>Higher taxes / revenue <b id="taxPct">0%</b></span><span><i class="dot b"></i>Lower benefits <b id="benPct">0%</b></span></div>
-      <div class="note" id="splitNote"></div>
+      <div class="label">Political capital spent</div>
+      <div class="meter"><div class="fill cap" id="capFill"></div></div>
+      <div class="big sm"><span id="capVal">0</span><span class="of"> / 100</span></div>
+      <div class="note" id="capNote"></div>
     </div>
   </section>
 
@@ -45,9 +45,24 @@
   </section>
 
   <div class="grid">
-    <section class="levers" id="levers" aria-label="Policy levers"></section>
+    <section class="levers" aria-label="Policy levers">
+      <div class="card timing">
+        <div class="ctl" id="timingCtl"></div>
+      </div>
+      <div class="tabs" role="tablist" id="tabs" aria-label="Lever buckets"></div>
+      <div id="panels"></div>
+      <button class="link" id="resetBtn" type="button">Reset everything to current law</button>
+    </section>
 
     <section class="results">
+      <div class="card">
+        <div class="ch-head"><h3>Who's on board?</h3><span class="unit">illustrative game mechanic, not polling</span></div>
+        <div class="approvals" id="approvals"></div>
+      </div>
+      <div class="card">
+        <div class="ch-head"><h3>Missions</h3><span class="unit" id="missionCount"></span></div>
+        <div class="missions" id="missions"></div>
+      </div>
       <div class="card">
         <div class="ch-head"><h3>Trust fund reserves</h3><span class="unit">trillions of 2026 dollars</span></div>
         <div class="chart" id="chartReserve"></div>
@@ -79,15 +94,16 @@
     <table class="reftable"><tbody id="refBody"></tbody></table>
     <details>
       <summary>How this model works, and its limits</summary>
-      <p>This is a simplified projection, not an official one. It starts from the 2026 Trustees Report intermediate path (combined reserves depleted in 2034; 75-year deficit of 4.42% of payroll) and applies each lever as a rule of thumb tuned to land near the published single-option scores above. Real estimates depend on detailed microsimulation of earnings, claiming behavior, disability, and the economy.</p>
-      <p>The model covers the combined OASDI funds; the retirement fund (OASI) alone runs dry earlier, in 2032. Equity investing is shown at its expected return only, with no risk. Treasury deposits ignore the borrowing cost. Fertility and immigration effects are rough sensitivities. Preset proposals are our loose translations of their main provisions.</p>
+      <p>This is a simplified projection, not an official one. It starts from the 2026 Trustees Report intermediate path (combined reserves depleted in 2034; 75-year deficit of 4.42% of payroll) and applies each lever as a rule of thumb. Levers for taxes, retirement age and the cost-of-living adjustment are tuned to land near the published single-option scores above.</p>
+      <p>Levers tagged <em>rough</em> (disability, survivors, minimum benefit, caregiver credits, life expectancy, wages, employment, interest rates, recessions and market crashes) have no published score behind them here; they are order-of-magnitude sensitivities. Disability and survivor benefits are modeled as about 10% and 13% of total cost.</p>
+      <p>The model covers the combined OASDI funds; the retirement fund (OASI) alone runs dry earlier, in 2032. Equity investing is shown at its expected return, with crashes only if you add one in Shocks. Treasury deposits ignore the borrowing cost. Political capital and approval meters are a game mechanic, not forecasts of how Congress or voters would react. Preset proposals are loose translations of their main provisions.</p>
       <p>Figures were compiled from public summaries because ssa.gov and cbo.gov could not be fetched directly; check the sources below before relying on any number.</p>
     </details>
     <div class="sources" id="sources"></div>
   </section>
 </main>
 
-<footer class="wrap fine">An educational tool. Not affiliated with SSA, CBO or Congress. <button class="link" id="shareBtn">Copy link to this scenario</button></footer>
+<footer class="wrap fine">An educational tool. Not affiliated with SSA, CBO or Congress. <button class="link" id="shareBtn" type="button">Copy link to this scenario</button></footer>
 
 <script src="model.js"></script>
 <script src="data.js"></script>

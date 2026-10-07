@@ -11,4 +11,15 @@ assert.ok(sum({ taxShare: 100 }).closedPct < sum({ taxShare: 100, benefitCredit:
 const late = M.summarize(M.simulate({ startYear: 2040, payrollRate: 4.0 }));
 const early = M.summarize(M.simulate({ startYear: 2028, payrollRate: 4.0 }));
 assert.ok(early.closedPct > late.closedPct, 'waiting costs more');
+// new levers move the gap in the expected direction
+assert.ok(sum({ diCut: 20 }).closedPct > 3, 'disability cut saves money');
+assert.ok(sum({ survCut: -15 }).closedPct < 0, 'survivor increase costs money');
+assert.ok(sum({ lifeExp: 1 }).closedPct < 0 && sum({ lifeExp: -1 }).closedPct > 0, 'longevity costs money');
+assert.ok(sum({ wageGrowth: 0.5 }).closedPct > 0, 'faster wages help');
+assert.ok(sum({ newCut: 15, shield: true }).closedPct < sum({ newCut: 15 }).closedPct, 'shield gives up savings');
+assert.ok(sum({ fra: 69, grandfather: true }).closedPct < sum({ fra: 69 }).closedPct, 'grandfathering delays savings');
+assert.ok(sum({ recession: 8 }).closedPct < 0, 'recession hurts');
+const crashed = M.simulate({ startYear: 2027, equityShare: 100, deposit: 1.4, crash: 40, crashYear: 2030 });
+const noCrash = M.simulate({ startYear: 2027, equityShare: 100, deposit: 1.4 });
+assert.ok(crashed.reserve[6] < noCrash.reserve[6], 'crash cuts reserves');
 console.log('model tests passed');

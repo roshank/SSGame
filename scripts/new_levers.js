@@ -1,0 +1,11 @@
+const M=require('../model.js');
+const t=(n,o)=>{const s=M.summarize(M.simulate(Object.assign({startYear:2027},o)));console.log(n.padEnd(26),'closed',s.closedPct.toFixed(1).padStart(6)+'%','depl',s.depletionYear,'bal',s.actuarialBalance.toFixed(2));};
+t('DI cut 20%',{diCut:20}); t('survivors cut 20%',{survCut:20}); t('survivors +15%',{survCut:-15});
+t('min benefit 100',{minBenefit:100}); t('caregiver 5y',{caregiver:5});
+t('shield+newCut15',{newCut:15,shield:true}); t('newCut15',{newCut:15});
+t('grandfather fra69',{fra:69,grandfather:true}); t('fra69',{fra:69});
+t('LE +1',{lifeExp:1}); t('LE -1',{lifeExp:-1});
+t('wage +0.5',{wageGrowth:0.5}); t('wage -0.5',{wageGrowth:-0.5});
+t('employment +2%',{employment:2}); t('rate +0.5',{realRate:0.5});
+t('tfr 2.0',{tfr:2.0}); t('imm +500',{immigration:500});
+t('recession 6%',{recession:6}); t('crash 40% w/ 100% eq',{crash:40,equityShare:100,deposit:1.4});
