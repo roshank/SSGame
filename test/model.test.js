@@ -4,6 +4,18 @@ const sum = (o) => M.summarize(M.simulate(Object.assign({ startYear: 2027 }, o))
 const base = M.summarize(M.baseline());
 assert.ok(Math.abs(base.actuarialBalance + 4.42) < 0.1, 'baseline gap ~4.42% of payroll');
 assert.strictEqual(base.depletionYear, 2034);
+// 2026 Trustees path: 83% payable at depletion, ~6.57% deficit in 2100
+assert.ok(Math.abs(base.payableAtDepletion - 0.83) < 0.015, 'payable at depletion ~83%');
+assert.ok(base.payable2100 > 0.63 && base.payable2100 < 0.69, 'payable in 2100 about two-thirds');
+assert.ok(Math.abs(base.finalYearBalance + 6.57) < 0.25, '2100 deficit ~6.57% of payroll');
+// sensitivities tuned to the 2026 report
+const dAB = (o) => M.simulate(o).actuarialBalance - M.baseline().actuarialBalance;
+assert.ok(Math.abs(dAB({ tfr: 1.90 }) - 0.33) < 0.05, 'fertility 1.75 -> 1.90 worth ~0.33');
+assert.ok(Math.abs(dAB({ immigration: -150 }) + 0.12) < 0.03, '150k fewer immigrants cost ~0.12');
+assert.ok(Math.abs(dAB({ wageGrowth: 0.5 }) - 0.54) < 0.1, '+0.5 pt real wage growth worth ~0.54');
+assert.ok(dAB({ realRate: 0.5 }) > 0.1 && dAB({ realRate: -0.5 }) < -0.1, 'interest rate matters via discounting');
+assert.ok(dAB({ benefitTax: -100, startYear: 2027 }) < -0.8, 'repealing tax on benefits costs ~1% of payroll');
+assert.ok(sum({ allCut: 20 }).closedPct < 20 / 25 * 100, 'benefit cuts give back some income tax on benefits');
 assert.ok(sum({ payrollRate: 4.7 }).closedPct > 95, 'big tax increase closes the gap');
 assert.ok(sum({ fra: 69, fraIndexed: true }).closedPct > 25 && sum({ fra: 69, fraIndexed: true }).closedPct < 40);
 assert.ok(sum({ cola: 'chained' }).closedPct > 10 && sum({ cola: 'chained' }).closedPct < 20);
