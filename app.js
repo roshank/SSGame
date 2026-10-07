@@ -244,20 +244,20 @@
     $('closedFill').style.background = s.closedPct >= 99 ? 'var(--good)' : 'var(--brand)';
     $('closedPct').textContent = Math.round(s.closedPct) + '%';
     const bal = s.actuarialBalance;
-    $('balNote').textContent = 'Gap now ' + (bal >= 0 ? '+' : '−') + Math.abs(bal).toFixed(2) + '% of payroll (starts at −4.4%). ' + (s.finalYearBalance < -0.05 ? 'Year-2100 deficit still ' + Math.abs(s.finalYearBalance).toFixed(1) + '% of payroll.' : s.closedPct >= 99 ? 'Balanced for 75 years.' : '');
+    $('balNote').textContent = 'Gap now ' + (bal >= 0 ? '+' : '−') + Math.abs(bal).toFixed(2) + '% of payroll (starts at −4.4%). ' + (s.finalYearBalance < -0.05 ? 'Year-2100 deficit ' + (s.reservesKeepPace ? 'of ' : 'still ') + Math.abs(s.finalYearBalance).toFixed(1) + '% of payroll' + (s.reservesKeepPace ? ', covered by earnings on reserves.' : '.') : s.closedPct >= 99 ? 'Balanced for 75 years.' : '');
 
     const v = $('verdict'), notes = [];
     if (state.allCut > 0) notes.push('it cuts benefits for people already retired');
     if (state.payrollRate > 0 || state.taxShare > 82.5 || state.otherRevenue > 0 || state.benefitTax > 0) notes.push('it raises taxes');
     if (state.startYear >= 2036) notes.push('waiting until ' + state.startYear + ' makes the changes steeper');
-    if (s.closedPct >= 99 && s.sustainable) { v.className = 'verdict win'; v.textContent = 'Solved: solvent for 75 years and still balanced in 2100.' + (notes.length ? ' Tradeoffs: ' + notes.join('; ') + '.' : ''); }
+    if (s.closedPct >= 99 && s.sustainable) { v.className = 'verdict win'; v.textContent = 'Solved: solvent for 75 years and still stable in 2100.' + (notes.length ? ' Tradeoffs: ' + notes.join('; ') + '.' : ''); }
     else if (s.closedPct >= 99) { v.className = 'verdict'; v.textContent = 'Balanced over 75 years, but costs outrun income by 2100, so the gap reopens right after.'; }
     else { v.className = 'verdict'; v.textContent = Math.max(0, Math.round(100 - s.closedPct)) + '% of the 75-year gap is still open.'; }
 
     const goals = [
       [!s.depletionYear, 'Trust fund never runs out'],
       [s.closedPct >= 99, 'Balanced over 75 years'],
-      [s.finalYearBalance >= -0.05, 'Balanced in the 75th year (2100)']
+      [s.stableAtEnd, 'Stable in the 75th year (2100)']
     ];
     $('goals').innerHTML = goals.map((g) => '<li class="' + (g[0] ? 'ok' : 'no') + '"><span aria-hidden="true">' + (g[0] ? '✓' : '✗') + '</span> ' + g[1] + '<span class="sr"> (' + (g[0] ? 'met' : 'not met') + ')</span></li>').join('');
 
