@@ -228,6 +228,14 @@
     const tp = sum > 0.5 ? t / sum * 100 : 0, bp = sum > 0.5 ? 100 - tp : 0;
     $('splitTax').style.width = tp + '%'; $('splitBen').style.width = bp + '%';
     $('taxPct').textContent = Math.round(tp) + '%'; $('benPct').textContent = Math.round(bp) + '%';
+    const v = $('verdict');
+    const notes = [];
+    if (state.allCut > 0) notes.push('it cuts benefits for people already retired');
+    if (state.payrollRate > 0 || state.taxShare > 82.5 || state.otherRevenue > 0) notes.push('it raises taxes');
+    if (state.startYear >= 2036) notes.push('waiting until ' + state.startYear + ' makes the changes steeper');
+    if (s.closedPct >= 99 && s.sustainable) { v.className = 'verdict win'; v.textContent = 'Solved: solvent for 75 years and still balanced in 2100.' + (notes.length ? ' Tradeoffs: ' + notes.join('; ') + '.' : ''); }
+    else if (s.closedPct >= 99) { v.className = 'verdict'; v.textContent = 'Balanced over 75 years, but costs outrun income by 2100, so the gap reopens right after.'; }
+    else { v.className = 'verdict'; v.textContent = 'Your challenge: close the remaining ' + Math.max(0, Math.round(100 - s.closedPct)) + '% of the gap and keep it closed in 2100.'; }
     $('splitNote').textContent = sum > 0.5 ? 'Of the shortfall these two levers close.' : 'Move a lever to see the balance.';
   }
 

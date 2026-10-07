@@ -73,3 +73,5 @@ button.link{background:none;border:0;color:var(--brand);text-decoration:underlin
 @media (max-width:860px){
   .scoreboard{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.big{font-size:48px}
 }
+.verdict{padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-size:15px;margin:-4px 0 12px}
+.verdict.win{border-color:var(--good);background:color-mix(in srgb,var(--good) 12%,var(--card))}
