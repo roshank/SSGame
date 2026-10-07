@@ -1,0 +1,14 @@
+const assert = require('assert');
+const M = require('../model.js');
+const sum = (o) => M.summarize(M.simulate(Object.assign({ startYear: 2027 }, o)));
+const base = M.summarize(M.baseline());
+assert.ok(Math.abs(base.actuarialBalance + 4.42) < 0.1, 'baseline gap ~4.42% of payroll');
+assert.strictEqual(base.depletionYear, 2034);
+assert.ok(sum({ payrollRate: 4.7 }).closedPct > 95, 'big tax increase closes the gap');
+assert.ok(sum({ fra: 69, fraIndexed: true }).closedPct > 25 && sum({ fra: 69, fraIndexed: true }).closedPct < 40);
+assert.ok(sum({ cola: 'chained' }).closedPct > 10 && sum({ cola: 'chained' }).closedPct < 20);
+assert.ok(sum({ taxShare: 100 }).closedPct < sum({ taxShare: 100, benefitCredit: false }).closedPct, 'benefit credit gives back revenue');
+const late = M.summarize(M.simulate({ startYear: 2040, payrollRate: 4.0 }));
+const early = M.summarize(M.simulate({ startYear: 2028, payrollRate: 4.0 }));
+assert.ok(early.closedPct > late.closedPct, 'waiting costs more');
+console.log('model tests passed');
