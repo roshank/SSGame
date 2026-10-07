@@ -12,3 +12,8 @@ Open `index.html` in a browser (or `python3 -m http.server`). Scenarios are shar
 - `scripts/calibrate.js`: compares single-lever results to published scores
 
 This is a simplified educational model, not an official estimate. See the in-app notes for limits.
+
+## Deploy
+Pushes to `main` deploy to GitHub Pages via `.github/workflows/pages.yml`.
+One-time setup: repo Settings → Pages → Source: **GitHub Actions**.
+Live at https://roshank.github.io/SSGame/
