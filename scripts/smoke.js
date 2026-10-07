@@ -8,7 +8,7 @@ const { chromium } = require('playwright');
   for (const id of ['sources','people','retirement','economy','shocks']) { await p.click('#tab_'+id); }
   await p.click('#tab_retirement');
   await p.click('button[data-id="protect"]');
-  console.log('depl:', await p.textContent('#depYear'), '| closed:', await p.textContent('#closedPct'), '| capital:', await p.textContent('#capVal'), '|', (await p.textContent('#missionCount')));
+  console.log('depl:', await p.textContent('#depYear'), '| closed:', await p.textContent('#closedPct'), '| goals:', (await p.textContent('#goals')).replace(/\s+/g,' '));
   await p.screenshot({ path: out + '/v2-retirement.png', fullPage: true });
   await p.click('#tab_shocks'); await p.click('#diceBtn');
   await p.screenshot({ path: out + '/v2-shocks.png' });

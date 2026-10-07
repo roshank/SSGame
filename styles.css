@@ -110,3 +110,7 @@ button.link{background:none;border:0;color:var(--brand);text-decoration:underlin
 button.btn{font:inherit;font-size:14px;padding:8px 14px;border-radius:10px;border:1px solid var(--brand);background:var(--brand);color:#fff;cursor:pointer}
 button.btn.alt{background:var(--card);color:var(--brand)}
 
+
+.goals{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px;font-size:15px}
+.goals li.ok{color:var(--good);font-weight:600}.goals li.no{color:var(--muted)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}

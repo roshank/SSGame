@@ -138,7 +138,7 @@
       b.sections.forEach((s) => {
         h += '<div class="sect"><h3>' + s.title + (s.rough ? ' <span class="rough" title="No published score behind this lever; order-of-magnitude only">rough</span>' : '') + '</h3>';
         s.ctl.forEach((c) => { h += '<div class="ctl">' + ctlHTML(c) + '</div>'; });
-        if (s.extra === 'dice') h += '<div class="btnrow"><button class="btn" id="diceBtn" type="button">🎲 Roll the dice</button><button class="btn alt" id="clearShocks" type="button">Clear shocks</button></div>';
+        if (s.extra === 'dice') h += '<div class="btnrow"><button class="btn" id="diceBtn" type="button">Random shocks</button><button class="btn alt" id="clearShocks" type="button">Clear shocks</button></div>';
         h += '</div>';
       });
       p.innerHTML = h; panels.appendChild(p);
@@ -221,75 +221,11 @@
       series: [{ name: 'Current law', data: base.payable, color: 'var(--muted)', dash: true, w: 2 }, { name: 'Your scenario', data: sim.payable, color: 'var(--brand)' }] });
   }
 
-  // ---- game mechanics: political capital, approvals, missions -------------------------
-  function capital(s) {
-    const benefitMult = (s.grandfather ? 0.75 : 1) * (s.shield ? 0.85 : 1);
-    let c = s.payrollRate * 7 + (s.taxShare - 82.5) / 17.5 * 35 + s.otherRevenue * 6 + s.deposit * 2 + s.equityShare * 0.1;
-    c += benefitMult * ((s.fra - 67) * 12 + (s.fraIndexed ? 4 : 0) + Math.max(0, s.newCut) * 1.5 + s.highCut * 0.7 + (s.cola === 'chained' ? 8 : 0) + Math.max(0, s.diCut) * 1.2 + Math.max(0, s.survCut) * 1.5);
-    c += Math.max(0, s.allCut) * 4;
-    return Math.round(c);
-  }
-  const clamp = (v) => Math.max(0, Math.min(100, Math.round(v)));
-  function approvals(s, sum) {
-    const solv = Math.max(0, Math.min(100, sum.closedPct)) / 100 * 20;
-    const ch = s.cola === 'chained' ? 1 : 0, ce = s.cola === 'cpie' ? 1 : 0;
-    const nearHit = s.grandfather ? 0 : 1;
-    const taxExt = s.taxShare - 82.5;
-    const inc = (v) => Math.max(0, -v), cutp = (v) => Math.max(0, v);
-    return [
-      { id: 'retirees', name: 'Retirees', sub: '65 and older',
-        v: clamp(50 + solv * 0.5 - cutp(s.allCut) * 3 + inc(s.allCut) * 1.5 - ch * 10 + ce * 6 - cutp(s.survCut) * 0.8 + inc(s.survCut) * 0.6 - cutp(s.diCut) * 0.2) },
-      { id: 'near', name: 'Near-retirees', sub: '50 to 64',
-        v: clamp(50 + solv - nearHit * ((s.fra - 67) * 10 + (s.fraIndexed ? 2 : 0) + cutp(s.newCut) * 0.7) - cutp(s.allCut) * 3 - ch * 8 + ce * 5 - s.payrollRate * 1.5 - cutp(s.survCut) * 0.5) },
-      { id: 'young', name: 'Younger workers', sub: 'under 40',
-        v: clamp(50 + solv * 1.5 - s.payrollRate * 5 - (s.fra - 67) * 5 - cutp(s.newCut) * 0.8 - s.highCut * 0.2 - s.otherRevenue * 1.5 - ch * 3) },
-      { id: 'high', name: 'Higher earners', sub: 'top fifth',
-        v: clamp(50 + solv * 0.3 - s.payrollRate * 3 - taxExt * 1.6 * (s.benefitCredit ? 0.7 : 1) - s.highCut * 1.2 - s.otherRevenue * 5 - cutp(s.newCut) * 0.3) },
-      { id: 'low', name: 'Lower earners', sub: 'bottom 40%',
-        v: clamp(50 + solv * 0.6 - s.payrollRate * 2.5 - cutp(s.newCut) * (s.shield ? 0.2 : 0.9) - cutp(s.allCut) * (s.shield ? 0.8 : 2.5) - (s.fra - 67) * (s.shield ? 3 : 8) - ch * (s.shield ? 3 : 6) + s.minBenefit * 0.15 + s.caregiver * 1.2 - cutp(s.diCut) * 0.5 - cutp(s.survCut) * 0.5) }
-    ];
-  }
-  const MISSIONS = [
-    { id: 'solve', title: 'Solvency Savior', desc: 'Close the whole gap and keep it closed through 2100.', test: (c) => c.solved },
-    { id: 'notax', title: 'No New Taxes', desc: 'Solve it without raising the payroll rate, the cap, or other revenue.', test: (c, s) => c.solved && s.payrollRate === 0 && s.taxShare <= 82.5 && s.otherRevenue === 0 },
-    { id: 'hands', title: 'Hands Off Retirees', desc: 'Solve it with no cuts for people already retired (no across-the-board cut, chained CPI, or survivor cut).', test: (c, s) => c.solved && s.allCut <= 0 && s.cola !== 'chained' && s.survCut <= 0 },
-    { id: 'protect', title: 'Protect the Vulnerable', desc: 'Solve it while lower earners stay at 50+ approval.', test: (c) => c.solved && c.appr.low >= 50 },
-    { id: 'early', title: 'Act Now', desc: 'Solve it with changes starting by 2028.', test: (c, s) => c.solved && s.startYear <= 2028 },
-    { id: 'passable', title: 'Congress-Ready', desc: 'Solve it within the 100-point capital budget and no group below 35.', test: (c) => c.solved && c.capital <= 100 && Math.min.apply(null, Object.values(c.appr)) >= 35 },
-    { id: 'storm', title: 'Storm-Proof', desc: 'Solve it with a 5%+ recession and a 30%+ market crash switched on.', test: (c, s) => c.solved && s.recession >= 5 && s.crash >= 30 && s.equityShare > 0 }
-  ];
-  let badges = {};
-  try { badges = JSON.parse(localStorage.getItem('ssgame.badges') || '{}') || {}; } catch (e) { badges = {}; }
-  function saveBadges() { try { localStorage.setItem('ssgame.badges', JSON.stringify(badges)); } catch (e) {} }
-
-  function renderGame(sum) {
-    const cap = capital(state);
-    $('capVal').textContent = cap;
-    const cf = $('capFill'); cf.style.width = Math.min(100, cap) + '%';
-    cf.className = 'fill cap' + (cap > 100 ? ' over' : cap > 75 ? ' warn' : '');
-    $('capNote').textContent = cap > 100 ? 'Over budget: this package would struggle to pass Congress.' : cap > 75 ? 'Getting expensive. Every unpopular lever draws on this budget.' : 'Taxes and benefit cuts cost capital. Increases are free.';
-
-    const ap = approvals(state, sum);
-    $('approvals').innerHTML = ap.map((a) => '<div class="appr"><div class="row"><span>' + a.name + ' <small>' + a.sub + '</small></span><span>' + a.v + '</span></div><div class="bar" role="img" aria-label="' + a.name + ' approval ' + a.v + ' out of 100"><i class="' + (a.v < 35 ? 'low' : a.v < 55 ? 'mid' : 'high') + '" style="width:' + a.v + '%"></i></div></div>').join('');
-
-    const ctx = { solved: sum.closedPct >= 99 && sum.sustainable, capital: cap, appr: {} };
-    ap.forEach((a) => { ctx.appr[a.id] = a.v; });
-    const fresh = [];
-    MISSIONS.forEach((m) => { if (m.test(ctx, state) && !badges[m.id]) { badges[m.id] = true; fresh.push(m.title); } });
-    if (fresh.length) saveBadges();
-    $('missions').innerHTML = MISSIONS.map((m) => {
-      const now = m.test(ctx, state), done = !!badges[m.id];
-      return '<div class="mission' + (done ? ' done' : '') + (now ? ' now' : '') + '"><b>' + m.title + '</b>' + m.desc + '<div class="st">' + (now ? 'Complete right now' : done ? 'Badge earned' : 'Locked') + '</div></div>';
-    }).join('');
-    $('missionCount').textContent = Object.keys(badges).filter((k) => MISSIONS.some((m) => m.id === k)).length + ' of ' + MISSIONS.length + ' badges';
-    return { cap, ctx, fresh };
-  }
-
   // ---- scoreboard --------------------------------------------------------------------
   const closed = (o) => M.summarize(M.simulate(o)).closedPct;
   function pick(keys) { const o = { startYear: state.startYear }; keys.forEach((k) => { o[k] = state[k]; }); return o; }
 
-  function renderScore(sim, s, game) {
+  function renderScore(sim, s) {
     const hero = $('heroCard');
     if (s.depletionYear) {
       $('depYear').textContent = s.depletionYear;
@@ -311,13 +247,18 @@
     if (state.allCut > 0) notes.push('it cuts benefits for people already retired');
     if (state.payrollRate > 0 || state.taxShare > 82.5 || state.otherRevenue > 0) notes.push('it raises taxes');
     if (state.startYear >= 2036) notes.push('waiting until ' + state.startYear + ' makes the changes steeper');
-    if (game.cap > 100) notes.push('it blows the political capital budget');
-    if (game.fresh.length) { v.className = 'verdict win'; v.textContent = 'Badge unlocked: ' + game.fresh.join(', ') + '!'; }
-    else if (s.closedPct >= 99 && s.sustainable) { v.className = 'verdict win'; v.textContent = 'Solved: solvent for 75 years and still balanced in 2100.' + (notes.length ? ' Tradeoffs: ' + notes.join('; ') + '.' : ''); }
+    if (s.closedPct >= 99 && s.sustainable) { v.className = 'verdict win'; v.textContent = 'Solved: solvent for 75 years and still balanced in 2100.' + (notes.length ? ' Tradeoffs: ' + notes.join('; ') + '.' : ''); }
     else if (s.closedPct >= 99) { v.className = 'verdict'; v.textContent = 'Balanced over 75 years, but costs outrun income by 2100, so the gap reopens right after.'; }
-    else { v.className = 'verdict'; v.textContent = 'Your challenge: close the remaining ' + Math.max(0, Math.round(100 - s.closedPct)) + '% of the gap and keep it closed in 2100.'; }
+    else { v.className = 'verdict'; v.textContent = Math.max(0, Math.round(100 - s.closedPct)) + '% of the 75-year gap is still open.'; }
 
-    // per-bucket contribution badges
+    const goals = [
+      [!s.depletionYear, 'Trust fund never runs out'],
+      [s.closedPct >= 99, 'Balanced over 75 years'],
+      [s.finalYearBalance >= -0.05, 'Balanced in the 75th year (2100)']
+    ];
+    $('goals').innerHTML = goals.map((g) => '<li class="' + (g[0] ? 'ok' : 'no') + '"><span aria-hidden="true">' + (g[0] ? '✓' : '✗') + '</span> ' + g[1] + '<span class="sr"> (' + (g[0] ? 'met' : 'not met') + ')</span></li>').join('');
+
+    // per-bucket contribution tags
     BUCKETS.forEach((b) => {
       const c = closed(pick(b.keys)), el = $('badge_' + b.id);
       el.className = 'b' + (c > 0.5 ? ' pos' : c < -0.5 ? ' neg' : '');
@@ -373,8 +314,7 @@
   function update() {
     const sim = M.simulate(state), base = M.baseline(), s = M.summarize(sim);
     syncControls(); renderTabs(); renderPresets();
-    const game = renderGame(s);
-    renderScore(sim, s, game); renderCharts(sim, base); renderYou(sim, base); writeHash();
+    renderScore(sim, s); renderCharts(sim, base); renderYou(sim, base); writeHash();
   }
 
   readHash();
