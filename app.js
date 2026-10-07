@@ -182,6 +182,7 @@
     $('presetSelect').value = activePreset || '';
     const p = D.PRESETS.find((x) => x.id === activePreset);
     $('presetBlurb').textContent = p ? p.blurb : 'Custom scenario. Adjust the levers, or pick a proposal to compare.';
+    $('presetSrc').innerHTML = p && p.sources && p.sources.length ? 'Sources: ' + p.sources.map((x) => '<a href="' + x[1] + '" target="_blank" rel="noopener">' + x[0] + '</a>').join(' · ') : '';
   }
 
   // ---- charts ------------------------------------------------------------------------
