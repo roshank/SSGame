@@ -153,12 +153,12 @@
     $('clearShocks').addEventListener('click', () => { ['recession', 'crash', 'recessionYear', 'crashYear'].forEach((k) => { state[k] = DEF[k]; }); activePreset = null; update(); });
     $('resetBtn').addEventListener('click', () => { Object.assign(state, DEF); activePreset = 'current'; update(); });
 
-    const box = $('presetChips');
-    D.PRESETS.forEach((p) => {
-      const b = document.createElement('button');
-      b.className = 'chip'; b.type = 'button'; b.dataset.id = p.id; b.innerHTML = p.name + '<small>' + p.tag + '</small>';
-      b.addEventListener('click', () => { const st = state.startYear; Object.assign(state, DEF, { startYear: st }, p.settings); activePreset = p.id; update(); });
-      box.appendChild(b);
+    const sel = $('presetSelect');
+    sel.innerHTML = '<option value="">Custom scenario</option>' + D.PRESETS.map((p) => '<option value="' + p.id + '">' + p.name + ' (' + p.tag + ')</option>').join('');
+    sel.addEventListener('change', () => {
+      const p = D.PRESETS.find((x) => x.id === sel.value);
+      if (!p) { activePreset = null; update(); return; }
+      const st = state.startYear; Object.assign(state, DEF, { startYear: st }, p.settings); activePreset = p.id; update();
     });
     $('refBody').innerHTML = D.REFERENCE.map((r) => '<tr><td>' + r.name + '</td><td>' + r.score + '</td><td><a href="' + r.url + '" target="_blank" rel="noopener">' + r.src + '</a></td></tr>').join('');
     $('sources').innerHTML = D.SOURCES.map((s) => '<a href="' + s[1] + '" target="_blank" rel="noopener">' + s[0] + '</a>').join('');
@@ -179,9 +179,9 @@
     });
   }
   function renderPresets() {
-    document.querySelectorAll('.chip').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.id === activePreset)));
+    $('presetSelect').value = activePreset || '';
     const p = D.PRESETS.find((x) => x.id === activePreset);
-    $('presetBlurb').textContent = p ? p.blurb : 'Custom scenario. Adjust the levers or pick a proposal above to compare.';
+    $('presetBlurb').textContent = p ? p.blurb : 'Custom scenario. Adjust the levers, or pick a proposal to compare.';
   }
 
   // ---- charts ------------------------------------------------------------------------
