@@ -200,9 +200,13 @@
 
       // --- reserves
       if (y === s.startYear) { reserve += s.deposit; depositPV = s.deposit * discount; }
-      if (s.crash > 0 && y === s.crashYear) reserve -= reserve * (s.equityShare / 100) * (s.crash / 100);
+      let crashLoss = 0;
+      if (s.crash > 0 && y === s.crashYear) { crashLoss = reserve * (s.equityShare / 100) * (s.crash / 100); reserve -= crashLoss; }
       const rate = BASE.yield[i] + s.realRate / 100;   // also the discount rate for the 75-yr balance
       const r = rate + (s.equityShare / 100) * 0.03;
+      // stock returns above the Treasury rate (and crash losses) count in the 75-yr balance,
+      // so it agrees with the reserve path
+      const excessReturn = reserve * (r - rate);
       let payable = 1;
       reserve = reserve + reserve * r + (incomeD - costD);
       if (reserve < 0) {
@@ -219,7 +223,7 @@
       out.payroll.push(Pe);
       lastCostD = costD;
 
-      pvGap += discount * (costD - incomeD);
+      pvGap += discount * (costD - incomeD + crashLoss - excessReturn);
       pvPayroll += discount * Pe;
       discount /= 1 + rate;
     }
@@ -239,6 +243,11 @@
     const shortfall = -base.actuarialBalance;
     const closed = (sim.actuarialBalance - base.actuarialBalance) / shortfall * 100;
     const idx = (y) => y - START;
+    // Trustees' sustainable-solvency test: at the end, income covers cost, or the trust fund
+    // ratio (reserves / a year's cost) is stable or rising, so earnings on reserves cover the gap
+    const ratio = (y) => sim.reserve[idx(y)] / (sim.cost[idx(y)] / 100 * sim.payroll[idx(y)]);
+    const reservesKeepPace = !sim.depletionYear && ratio(END) >= 1 && ratio(END) >= ratio(END - 5);
+    const stableAtEnd = sim.finalYearBalance >= -0.05 || reservesKeepPace;
     return {
       actuarialBalance: sim.actuarialBalance,
       closedPct: closed,
@@ -248,7 +257,9 @@
       payable2100: sim.payable[idx(2100)],
       finalYearBalance: sim.finalYearBalance,
       solvent75: sim.actuarialBalance >= -0.005,
-      sustainable: sim.actuarialBalance >= -0.005 && sim.finalYearBalance >= -0.05
+      reservesKeepPace,
+      stableAtEnd,
+      sustainable: sim.actuarialBalance >= -0.005 && stableAtEnd
     };
   }
 

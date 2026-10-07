@@ -34,6 +34,14 @@ assert.ok(sum({ recession: 8 }).closedPct < 0, 'recession hurts');
 const crashed = M.simulate({ startYear: 2027, equityShare: 100, deposit: 1.4, crash: 40, crashYear: 2030 });
 const noCrash = M.simulate({ startYear: 2027, equityShare: 100, deposit: 1.4 });
 assert.ok(crashed.reserve[6] < noCrash.reserve[6], 'crash cuts reserves');
+// stock returns count in the 75-yr balance, and growing reserves count as stable at the end
+const stocks = { payrollRate: 0.9, taxShare: 97, equityShare: 80, tfr: 2, immigration: 250, fra: 69, diCut: 11, survCut: 7 };
+const withStocks = M.summarize(M.simulate(stocks));
+const noStocks = M.summarize(M.simulate(Object.assign({}, stocks, { equityShare: 0 })));
+assert.ok(withStocks.actuarialBalance > noStocks.actuarialBalance + 0.5, 'expected stock returns improve the 75-yr balance');
+assert.ok(withStocks.finalYearBalance < -0.05 && withStocks.stableAtEnd && withStocks.sustainable, 'reserve earnings cover a cash deficit');
+assert.ok(!noStocks.stableAtEnd, 'without stocks the same plan runs dry');
+assert.ok(M.summarize(M.simulate(Object.assign({}, stocks, { crash: 40, crashYear: 2085 }))).actuarialBalance < withStocks.actuarialBalance, 'a crash counts against the balance');
 // every preset only sets real levers
 global.window = global; require('../data.js');
 for (const p of global.SSData.PRESETS) for (const k of Object.keys(p.settings)) assert.ok(k in M.DEFAULTS, p.id + ' sets unknown lever ' + k);
