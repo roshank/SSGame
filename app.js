@@ -11,7 +11,7 @@
 
   const BUCKETS = [
     { id: 'sources', name: 'Sources', icon: '💵', intro: 'Where the money comes from: payroll taxes, other revenue, and what the trust fund itself earns.',
-      keys: ['payrollRate', 'taxShare', 'benefitCredit', 'otherRevenue', 'deposit', 'equityShare'],
+      keys: ['payrollRate', 'taxShare', 'benefitCredit', 'otherRevenue', 'benefitTax', 'deposit', 'equityShare'],
       sections: [
         { title: 'Payroll taxes', ctl: [
           { k: 'payrollRate', t: 'range', label: 'Payroll tax rate increase', min: 0, max: 6, step: 0.1, fmt: (v) => (12.4 + v).toFixed(1) + '% total',
@@ -21,7 +21,9 @@
           { k: 'benefitCredit', t: 'check', label: 'Newly taxed earnings also earn benefits',
             help: 'With credit, high earners get larger checks later, which gives back part of the revenue.' },
           { k: 'otherRevenue', t: 'range', label: 'Other dedicated revenue', min: 0, max: 4, step: 0.1, fmt: (v) => '+' + v.toFixed(1) + '% of payroll',
-            help: 'E.g. a surtax on high earners\' investment income or general-revenue transfers.' }
+            help: 'E.g. a surtax on high earners\' investment income or general-revenue transfers.' },
+          { k: 'benefitTax', t: 'range', label: 'Income tax on benefits sent to the funds', min: -100, max: 100, step: 10, fmt: (v) => v === 0 ? 'current law' : v === -100 ? 'repealed' : (v > 0 ? '+' : '') + v + '%',
+            help: 'Retirees with higher incomes pay income tax on part of their benefits; the funds get ~6% of their income this way. The 2025 tax law cut it. Repeal is −100%.' }
         ]},
         { title: 'Trust fund money', ctl: [
           { k: 'deposit', t: 'range', label: 'One-time Treasury deposit', min: 0, max: 5, step: 0.1, fmt: (v) => '$' + v.toFixed(1) + 'T',
@@ -71,7 +73,7 @@
       sections: [{ title: 'The economy', rough: true, ctl: [
         { k: 'wageGrowth', t: 'range', label: 'Real wage growth vs. baseline', min: -1, max: 1, step: 0.1, fmt: (v) => (v > 0 ? '+' : '') + v.toFixed(1) + ' pt/yr', help: 'Faster wages grow payroll faster than cost-of-living-adjusted benefits.' },
         { k: 'employment', t: 'range', label: 'Long-run employment', min: -5, max: 5, step: 0.5, fmt: (v) => (v > 0 ? '+' : '') + v + '%', help: 'More people working means a bigger payroll base. Think labor-force participation.' },
-        { k: 'realRate', t: 'range', label: 'Real interest rate on reserves', min: -1, max: 1, step: 0.1, fmt: (v) => (v > 0 ? '+' : '') + v.toFixed(1) + ' pt', help: 'Only matters while reserves last, so it does little with the fund this small.' }
+        { k: 'realRate', t: 'range', label: 'Real interest rate on reserves', min: -1, max: 1, step: 0.1, fmt: (v) => (v > 0 ? '+' : '') + v.toFixed(1) + ' pt', help: 'The return on reserves, and the rate the Trustees use to value future deficits. Higher rates make later deficits weigh less.' }
       ]}]},
     { id: 'shocks', name: 'Shocks', icon: '⚡', intro: 'Stress-test your plan. Recessions and crashes are the surprises that break neat projections.',
       keys: ['recession', 'recessionYear', 'crash', 'crashYear', 'equityShare'],
@@ -86,7 +88,7 @@
   BUCKETS.forEach((b) => b.sections.forEach((s) => s.ctl.forEach((c) => { ALL_CTL[c.k] = c; })));
   ALL_CTL.startYear = TIMING;
 
-  const SRC_TAX = ['payrollRate', 'taxShare', 'benefitCredit', 'otherRevenue', 'deposit', 'equityShare'];
+  const SRC_TAX = ['payrollRate', 'taxShare', 'benefitCredit', 'otherRevenue', 'benefitTax', 'deposit', 'equityShare'];
   const RET = BUCKETS[2].keys;
   const PEOPLE_ECON = ['tfr', 'immigration', 'lifeExp', 'wageGrowth', 'employment', 'realRate'];
 
@@ -246,7 +248,7 @@
 
     const v = $('verdict'), notes = [];
     if (state.allCut > 0) notes.push('it cuts benefits for people already retired');
-    if (state.payrollRate > 0 || state.taxShare > 82.5 || state.otherRevenue > 0) notes.push('it raises taxes');
+    if (state.payrollRate > 0 || state.taxShare > 82.5 || state.otherRevenue > 0 || state.benefitTax > 0) notes.push('it raises taxes');
     if (state.startYear >= 2036) notes.push('waiting until ' + state.startYear + ' makes the changes steeper');
     if (s.closedPct >= 99 && s.sustainable) { v.className = 'verdict win'; v.textContent = 'Solved: solvent for 75 years and still balanced in 2100.' + (notes.length ? ' Tradeoffs: ' + notes.join('; ') + '.' : ''); }
     else if (s.closedPct >= 99) { v.className = 'verdict'; v.textContent = 'Balanced over 75 years, but costs outrun income by 2100, so the gap reopens right after.'; }

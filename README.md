@@ -6,7 +6,7 @@ trust fund. Levers are grouped into five buckets (Sources, People, Retirement, E
 
 Open `index.html` in a browser (or `python3 -m http.server`). Scenarios are shareable via the URL hash.
 
-- `model.js`: projection engine, calibrated to the 2026 Trustees Report (combined depletion 2034, 4.42% gap)
+- `model.js`: projection engine, calibrated to the 2026 Trustees Report: year-by-year cost and income rates, combined depletion in 2034 at 83% payable, 4.42% gap, 6.57%-of-payroll deficit in 2100, and the report's fertility, immigration, wage and interest sensitivities
 - `data.js`: sourced reference scores and preset encodings
 - `app.js`, `styles.css`: UI
 - `scripts/calibrate.js`: compares single-lever results to published scores

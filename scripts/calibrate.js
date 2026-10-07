@@ -12,3 +12,10 @@ t('eliminate cap no credit', {taxShare: 100, benefitCredit: false}, '~67');
 t('FRA 69 + indexed', {fra: 69, fraIndexed: true}, '~36-37');
 t('chained CPI', {cola: 'chained'}, '~18-19');
 t('all benefits -13%', {allCut: 13}, '~100?');
+// 2026 Trustees sensitivities (change in 75-yr balance, % of payroll)
+const d = (name, o, target) => console.log(name.padEnd(34), 'dAB', (M.simulate(o).actuarialBalance - M.baseline().actuarialBalance).toFixed(2), 'target', target);
+d('fertility 1.75 -> 1.90', {tfr: 1.90}, '+0.33');
+d('150k fewer immigrants/yr', {immigration: -150}, '-0.12');
+d('real wage growth +0.5', {wageGrowth: 0.5}, '+0.54');
+d('real interest +0.5', {realRate: 0.5}, '~+0.2-0.3');
+d('repeal tax on benefits', {benefitTax: -100, startYear: 2027}, 'depletion ~2032');

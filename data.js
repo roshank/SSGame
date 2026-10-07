@@ -1,6 +1,6 @@
 /* Reference data: sourced published figures and approximate preset encodings. */
 (function (root) {
-  // Headline facts: 2026 Trustees Report (via CRS, CRFB, CNBC summaries; ssa.gov was not reachable when built).
+  // Headline facts: 2026 Trustees Report (via CRR, CRFB, CRS summaries; ssa.gov was not reachable when built).
   const FACTS = {
     report: '2026 Trustees Report',
     oasiDepletion: '2032 (Q4)',
@@ -8,7 +8,9 @@
     combinedDepletion: '2034 (Q3)',
     combinedPayable: 83,
     deficit: 4.42,
-    deficitPrior: 3.82
+    deficitPrior: 3.82,
+    combinedPayable2100: 65,   // CRR; income 13.5% vs cost 20.0% of payroll gives ~67%
+    deficit2100: 6.57          // annual deficit in 2100, % of payroll
   };
 
   // Published single-provision scores (percent of 75-yr shortfall closed). Most come from
@@ -31,7 +33,7 @@
   const PRESETS = [
     {
       id: 'current', name: 'Do nothing', tag: 'Current law',
-      blurb: 'No legislation. OASI runs dry in 2032, the combined funds in 2034, and benefits are cut automatically to what incoming taxes can pay (about 77–83%).',
+      blurb: 'No legislation. OASI runs dry in 2032, the combined funds in 2034, and benefits are cut automatically to what incoming taxes can pay: about 83% of scheduled at first, falling to about two-thirds by 2100.',
       settings: {},
       sources: [['2026 Trustees Report highlights', 'https://www.ssa.gov/oact/tr/2026/II_A_highlights.html']]
     },
@@ -89,6 +91,8 @@
     ['2026 Trustees Report highlights', 'https://www.ssa.gov/oact/tr/2026/II_A_highlights.html'],
     ['CRS: Selected Findings of the 2026 Annual Report', 'https://www.congress.gov/crs-product/IF13256'],
     ['CRFB: Analysis of the 2026 Trustees\' Report', 'https://www.crfb.org/papers/analysis-2026-social-security-trustees-report'],
+    ['CRR: Social Security\'s financial outlook, the 2026 update', 'https://crr.bc.edu/social-securitys-financial-outlook-the-2026-update-in-perspective/'],
+    ['2026 Trustees Report: long-range sensitivity analysis', 'https://www.ssa.gov/oact/TR/2026/VI_D_LRsens.html'],
     ['CBO: Social Security (March 2026)', 'https://www.cbo.gov/system/files/2026-03/62217-Social-Security.pdf'],
     ['SSA OCACT: provisions affecting solvency', 'https://www.ssa.gov/OACT/solvency/provisions_tr2025/index.html'],
     ['CRFB: Ten options to secure the trust fund', 'https://www.crfb.org/blogs/ten-options-secure-social-security-trust-fund'],
